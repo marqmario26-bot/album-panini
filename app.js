@@ -276,11 +276,18 @@ function cargarEquipos(){
   });
 }
 
+
 function cambiarTab(tab){
   document.querySelectorAll(".tab").forEach(t=>t.classList.add("oculto"));
   document.getElementById(tab).classList.remove("oculto");
 
-  if(tab==="intercambio") renderIntercambio();
+  if(tab === "intercambio"){
+    renderIntercambio();
+  }
+
+  if(tab === "dashboard"){
+    renderDashboard();
+  }
 }
 
 function init(){
