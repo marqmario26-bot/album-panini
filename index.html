@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Álbum Mundial 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="banner">
+  <img src="img/banner.jpg" class="banner-img">
+  <div class="banner-overlay">
+    <h1>⚽ FIFA World Cup 2026</h1>
+    <p>Mi Álbum Panini</p>
+  </div>
+</header>
+
+<nav>
+  <button onclick="cambiarTab('album')">📘 Álbum</button>
+  <button onclick="cambiarTab('repetidas')">🔁 Repetidas</button>
+  <button onclick="cambiarTab('intercambio')">🤝 Intercambio</button>
+  <button onclick="cambiarTab('dashboard')">📊 Dashboard</button>
+</nav>
+
+<main>
+
+<div id="album" class="tab">
+  <div id="contenedor"></div>
+</div>
+
+<div id="repetidas" class="tab oculto">
+
+  <h2>🔁 Repetidas</h2>
+
+  <div class="form-rep">
+    <select id="equipoRep"></select>
+    <input id="numRep" type="number" placeholder="Número">
+
+    <select id="tipoRep">
+      <option value="intercambio">Intercambiar</option>
+      <option value="venta">Vender 💰</option>
+    </select>
+
+    <button onclick="agregarRepetida()">Agregar</button>
+  </div>
+
+  <div id="contenedorRep"></div>
+
+  <h3 id="valorTotal"></h3>
+
+</div>
+
+<div id="intercambio" class="tab oculto">
+  <h2>🤝 Intercambio inteligente</h2>
+  <button onclick="renderIntercambio()">Actualizar</button>
+  <div id="resultado"></div>
+</div>
+
+<div id="dashboard" class="tab oculto">
+  <h2>📊 Progreso por país</h2>
+  <div id="dashboardData"></div>
+</div>
+
+</main>
+
+<footer>
+  <p id="progreso"></p>
+</footer>
+
+<script src="app.js"></script>
+
+</body>
+</html>
+
