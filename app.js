@@ -268,9 +268,12 @@ function exportarRepetidas(){
 }
 
 // ✅ ✅ ✅ renderDashboard
-function renderDashboard(){function render cont = document.getElementById("dashboardData");
 
-  if(!cont) return; // ✅ evita error silencioso
+function renderDashboard(){
+
+  let cont = document.getElementById("dashboardData");
+
+  if(!cont) return; // evita errores si no existe
 
   cont.innerHTML = "";
 
@@ -282,12 +285,11 @@ function renderDashboard(){function render cont = document.getElementById("dashb
 
     let total = getMax(eq);
 
-    // ✅ protección segura
     let falt = Array.isArray(data[eq]) ? data[eq].length : 0;
 
     let progreso = ((total - falt) / total * 100).toFixed(1);
 
-    // ✅ separados
+    // ✅ Equipos especiales separados
     if(["Panini","History","CC"].includes(nombre)){
       cont.innerHTML += `<div>${nombre}: ${progreso}%</div>`;
     } 
@@ -295,6 +297,7 @@ function renderDashboard(){function render cont = document.getElementById("dashb
 
       grupo.push(`${nombre}: ${progreso}%`);
 
+      // ✅ Agrupar de a 4
       if(grupo.length === 4){
         cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
         grupo = [];
@@ -302,11 +305,12 @@ function renderDashboard(){function render cont = document.getElementById("dashb
     }
   }
 
-  // ✅ Renderiza resto
+  // ✅ Mostrar el resto si no completa 4
   if(grupo.length > 0){
     cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
   }
 }
+
 
 
 // ✅ INIT
@@ -317,6 +321,7 @@ function cargarEquipos(){
     s.innerHTML+=`<option>${e}</option>`;
   });
 }
+
 
 
 function cambiarTab(tab){
@@ -331,6 +336,7 @@ function cambiarTab(tab){
     renderDashboard();
   }
 }
+
 
 function init(){
   cargarEquipos();
