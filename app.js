@@ -17,6 +17,7 @@ const equiposBase = [
 ];
 
 
+
 // ✅ DATA
 let data = JSON.parse(localStorage.getItem("data")) || {};
 let repetidas = JSON.parse(localStorage.getItem("rep")) || {};
@@ -54,7 +55,9 @@ function render(){
   for(let eq of equiposBase){
 
     let nombre = eq.split("-")[0];
-    let codigo = eq.includes("-") ? eq.split("-")[1] : eq.substring(0,3).toUpperCase();
+    let codigo = eq.includes("-")
+      ? eq.split("-")[1]
+      : eq.substring(0,3).toUpperCase();
 
     let html = `<div class="card equipo">
     <h3>${nombre}</h3><div class="grid">`;
@@ -63,7 +66,7 @@ function render(){
 
       let f = data[eq].includes(i);
 
-      html+=`
+      html += `
       <div class="lamina ${f?"faltante":"conseguida"}"
       onclick="toggle('${eq}',${i})">
       ${codigo}-${i}
@@ -72,11 +75,11 @@ function render(){
       if(f) falt++;
     }
 
-    html+="</div></div>";
-    cont.innerHTML+=html;
+    html += "</div></div>";
+    cont.innerHTML += html;
   }
 
-  document.getElementById("progreso").innerText=`Faltan ${falt}`;
+  document.getElementById("progreso").innerText = `Faltan ${falt}`;
 
   renderRepetidas();
 }
@@ -84,14 +87,14 @@ function render(){
 // ✅ TOGGLE
 function toggle(eq,n){
   if(data[eq].includes(n)){
-    data[eq]=data[eq].filter(x=>x!==n);
+    data[eq] = data[eq].filter(x=>x!==n);
   }else{
     data[eq].push(n);
   }
   guardar();
 }
 
-// ✅ REPETIDAS (INGRESO)
+// ✅ AGREGAR REPETIDAS
 function agregarRepetida(){
 
   let eq = document.getElementById("equipoRep").value;
@@ -117,7 +120,7 @@ function agregarRepetida(){
   guardar();
 }
 
-// ✅ SALIDA CORRECTA
+// ✅ USAR REPETIDA
 function usarRepetida(eq,n,tipo){
 
   let info = repetidas[eq]?.[n];
@@ -161,7 +164,7 @@ function renderRepetidas(){
         total += info.venta * PRECIO_LAMINA;
       }
 
-      html+=`
+      html += `
       <div class="lamina repetida">
 
         <span onclick="usarRepetida('${eq}',${n},'intercambio')">
@@ -179,38 +182,38 @@ function renderRepetidas(){
       </div>`;
     }
 
-    html+="</div></div>";
-    cont.innerHTML+=html;
+    html += "</div></div>";
+    cont.innerHTML += html;
   }
 
-  document.getElementById("valorTotal").innerText=`💰 $${total}`;
+  document.getElementById("valorTotal").innerText = `💰 $${total}`;
 }
 
-// ✅ INTERCAMBIO FUNCIONAL
+// ✅ INTERCAMBIO
 function renderIntercambio(){
 
-  let cont=document.getElementById("resultado");
-  cont.innerHTML="";
+  let cont = document.getElementById("resultado");
+  cont.innerHTML = "";
 
   for(let eq of equiposBase){
 
-    let faltantes=data[eq];
-    let reps=repetidas[eq]||{};
+    let faltantes = data[eq];
+    let reps = repetidas[eq] || {};
 
-    let html=`<div class="card">
+    let html = `<div class="card">
     <h3>${eq.split("-")[0]}</h3><ul>`;
 
-    let hay=false;
+    let hay = false;
 
-    faltantes.forEach(n=>{
+    faltantes.forEach(n => {
 
-      let info=reps[n];
+      let info = reps[n];
 
       if(info && info.intercambio>0){
 
-        hay=true;
+        hay = true;
 
-        html+=`
+        html += `
         <li>
           ${n} 🔁(${info.intercambio})
           <button onclick="hacerIntercambio('${eq}',${n})">✅</button>
@@ -218,17 +221,17 @@ function renderIntercambio(){
       }
     });
 
-    html+="</ul>";
+    html += "</ul>";
 
     if(!hay) html+="Sin intercambio";
 
-    html+="</div>";
+    html += "</div>";
 
-    cont.innerHTML+=html;
+    cont.innerHTML += html;
   }
 }
 
-// ✅ EJECUTAR INTERCAMBIO
+// ✅ HACER INTERCAMBIO
 function hacerIntercambio(eq,n){
 
   let info = repetidas[eq][n];
@@ -240,12 +243,12 @@ function hacerIntercambio(eq,n){
     delete repetidas[eq][n];
   }
 
-  data[eq]=data[eq].filter(x=>x!==n);
+  data[eq] = data[eq].filter(x=>x!==n);
 
   guardar();
 }
 
-// ✅ ✅ ✅ EXPORT (SOLUCION DESCARGA)
+// ✅ EXPORT
 function descargarJSON(obj,nombre){
 
   const blob = new Blob([JSON.stringify(obj,null,2)], {type:"application/json"});
@@ -267,13 +270,11 @@ function exportarRepetidas(){
   descargarJSON(repetidas,"repetidas.json");
 }
 
-// ✅ ✅ ✅ renderDashboard
-
+// ✅ DASHBOARD (CORREGIDO)
 function renderDashboard(){
 
   let cont = document.getElementById("dashboardData");
-
-  if(!cont) return; // evita errores si no existe
+  if(!cont) return;
 
   cont.innerHTML = "";
 
@@ -282,36 +283,28 @@ function renderDashboard(){
   for(let eq of equiposBase){
 
     let nombre = eq.split("-")[0];
-
     let total = getMax(eq);
+    let falt = data[eq].length;
 
-    let falt = Array.isArray(data[eq]) ? data[eq].length : 0;
+    let progreso = ((total - falt)/total*100).toFixed(1);
 
-    let progreso = ((total - falt) / total * 100).toFixed(1);
-
-    // ✅ Equipos especiales separados
     if(["Panini","History","CC"].includes(nombre)){
       cont.innerHTML += `<div>${nombre}: ${progreso}%</div>`;
-    } 
-    else {
+    }else{
 
       grupo.push(`${nombre}: ${progreso}%`);
 
-      // ✅ Agrupar de a 4
-      if(grupo.length === 4){
+      if(grupo.length===4){
         cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
         grupo = [];
       }
     }
   }
 
-  // ✅ Mostrar el resto si no completa 4
-  if(grupo.length > 0){
+  if(grupo.length>0){
     cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
   }
 }
-
-
 
 // ✅ INIT
 function cargarEquipos(){
@@ -322,21 +315,13 @@ function cargarEquipos(){
   });
 }
 
-
-
 function cambiarTab(tab){
   document.querySelectorAll(".tab").forEach(t=>t.classList.add("oculto"));
   document.getElementById(tab).classList.remove("oculto");
 
-  if(tab === "intercambio"){
-    renderIntercambio();
-  }
-
-  if(tab === "dashboard"){
-    renderDashboard();
-  }
+  if(tab==="intercambio") renderIntercambio();
+  if(tab==="dashboard") renderDashboard();
 }
-
 
 function init(){
   cargarEquipos();
