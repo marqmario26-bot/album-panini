@@ -267,6 +267,48 @@ function exportarRepetidas(){
   descargarJSON(repetidas,"repetidas.json");
 }
 
+// ✅ ✅ ✅ renderDashboard
+function renderDashboard(){function render cont = document.getElementById("dashboardData");
+
+  if(!cont) return; // ✅ evita error silencioso
+
+  cont.innerHTML = "";
+
+  let grupo = [];
+
+  for(let eq of equiposBase){
+
+    let nombre = eq.split("-")[0];
+
+    let total = getMax(eq);
+
+    // ✅ protección segura
+    let falt = Array.isArray(data[eq]) ? data[eq].length : 0;
+
+    let progreso = ((total - falt) / total * 100).toFixed(1);
+
+    // ✅ separados
+    if(["Panini","History","CC"].includes(nombre)){
+      cont.innerHTML += `<div>${nombre}: ${progreso}%</div>`;
+    } 
+    else {
+
+      grupo.push(`${nombre}: ${progreso}%`);
+
+      if(grupo.length === 4){
+        cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
+        grupo = [];
+      }
+    }
+  }
+
+  // ✅ Renderiza resto
+  if(grupo.length > 0){
+    cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
+  }
+}
+
+
 // ✅ INIT
 function cargarEquipos(){
   let s=document.getElementById("equipoRep");
