@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Álbum Mundial 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="banner">
+  <img src="img/banner.jpg" class="banner-img">
+  <div class="banner-overlay">
+    <h1>⚽ Álbum Mundial 2026</h1>
+  </div>
+</header>
+
+<nav>
+  <button onclick="cambiarTab('album')">📘</button>
+  <button onclick="cambiarTab('repetidas')">🔁</button>
+  <button onclick="cambiarTab('intercambio')">🤝</button>
+  <button onclick="cambiarTab('dashboard')">📊</button>
+</nav>
+
+<input id="buscar" placeholder="🔎 Buscar equipo..." onkeyup="filtrarEquipos()">
+
+<main>
+
+<!-- ÁLBUM -->
+<div id="album" class="tab">
+  <button onclick="exportarData()">💾 Descargar Álbum</button>
+  <input type="file" onchange="importarDataArchivo(event)">
+  <div id="contenedor"></div>
+</div>
+
+<!-- REPETIDAS -->
+<div id="repetidas" class="tab oculto">
+
+  <div class="form-rep">
+    <select id="equipoRep"></select>
+    <input id="numRep" type="number">
+
+    <select id="tipoRep">
+      <option value="intercambio">🔁</option>
+      <option value="venta">💰</option>
+    </select>
+
+    <button onclick="agregarRepetida()">+</button>
+  </div>
+
+  <button onclick="exportarRepetidas()">💾 Descargar Repetidas</button>
+  <input type="file" onchange="importarRepetidasArchivo(event)">
+
+  <div id="contenedorRep"></div>
+  <h3 id="valorTotal"></h3>
+
+</div>
+
+<!-- INTERCAMBIO -->
+<div id="intercambio" class="tab oculto">
+  <div id="resultado"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="tab oculto">
+  <div id="dashboardData"></div>
+</div>
+
+</main>
+
+<footer id="progreso"></footer>
+
+<script src="app.js"></script>
+</body>
+</html>
+
