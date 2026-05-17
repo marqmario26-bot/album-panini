@@ -211,13 +211,13 @@ function renderIntercambio(){
 
       let info = reps[n];
 
-      if(info && info.intercambio > 0){
+      if(info && info > 0){
 
         sugerencias.push({
           eq,
           nombre,
           lamina: n,
-          cantidad: info.intercambio,
+          cantidad: info,
           prioridad
         });
 
@@ -225,6 +225,14 @@ function renderIntercambio(){
 
     });
   }
+  
+if(sugerencias.length === 0){
+  cont.innerHTML = `
+    <div class="card">
+      No hay intercambios sugeridos
+    </div>`;
+}
+
  
  
 // ✅ RENDER SIMPLE CON INFO
@@ -414,6 +422,7 @@ function init(){
 }
 
 init();
+
 
 
 
