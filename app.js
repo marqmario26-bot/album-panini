@@ -190,46 +190,75 @@ function renderRepetidas(){
 }
 
 // ✅ INTERCAMBIO
+
+
+
 function renderIntercambio(){
 
   let cont = document.getElementById("resultado");
+  if(!cont) return;
+
   cont.innerHTML = "";
+
+  let sugerencias = [];
 
   for(let eq of equiposBase){
 
-    let faltantes = data[eq];
+    let nombre = eq.split("-")[0];
+
+    // ✅ calcular faltantes reales
+    let faltantes = [];
+    for(let i=1; i<=getMax(eq); i++){
+      if(!data[eq].includes(i)){
+        faltantes.push(i);
+      }
+    }
+
+    let total = getMax(eq);
+    let falt = faltantes.length;
+
+    let prioridad = falt / total;
+
     let reps = repetidas[eq] || {};
-
-    let html = `<div class="card">
-    <h3>${eq.split("-")[0]}</h3><ul>`;
-
-    let hay = false;
 
     faltantes.forEach(n => {
 
       let info = reps[n];
 
-      if(info && info.intercambio>0){
+      if(info && info.intercambio > 0){
 
-        hay = true;
+        sugerencias.push({
+          eq,
+          nombre,
+          lamina: n,
+          cantidad: info.intercambio,
+          prioridad
+        });
 
-        html += `
-        <li>
-          ${n} 🔁(${info.intercambio})
-          <button onclick="hacerIntercambio('${eq}',${n})">✅</button>
-        </li>`;
       }
+
     });
+  }
 
-    html += "</ul>";
+  // ✅ ordenar por prioridad
+  sugerencias.sort((a,b) => b.prioridad - a.prioridad);
 
-    if(!hay) html+="Sin intercambio";
+  // ✅ render
+  sugerencias.forEach(s => {
 
-    html += "</div>";
+    cont.innerHTML += `
+    <div class="card">
+      <strong>${s.nombre}</strong> - ${s.lamina}
+      🔁 (${s.cantidad})
+      <button onclick="hacerIntercambio('${s.eq}',${s.lamina})">✅</button>
+    </div>`;
+  });
 
-    cont.innerHTML += html;
+  if(sugerencias.length === 0){
+    cont.innerHTML = "Sin intercambios disponibles";
   }
 }
+
 
 // ✅ HACER INTERCAMBIO
 function hacerIntercambio(eq,n){
