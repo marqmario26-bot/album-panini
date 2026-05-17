@@ -142,7 +142,6 @@ function usarRepetida(eq,n,tipo){
 }
 
 // ✅ RENDER REPETIDAS
-
 function renderRepetidas(){
 
   let cont = document.getElementById("contenedorRep");
@@ -154,56 +153,41 @@ function renderRepetidas(){
 
     let nombre = eq.split("-")[0];
 
-    let htmlIntercambio = "";
-    let htmlVenta = "";
+    let html = `<div class="card">
+    <h3>${nombre}</h3><div class="grid">`;
 
     for(let n in repetidas[eq]){
 
       let info = repetidas[eq][n];
 
-      // ✅ INTERCAMBIO
-      if(info.intercambio > 0){
-
-        htmlIntercambio += `
-        <div class="lamina repetida-intercambio">
-          ${n} 🔁 (${info.intercambio})
-          <button onclick="usarRepetida('${eq}',${n},'intercambio')">-</button>
-        </div>`;
-      }
-
-      // ✅ VENTA
-      if(info.venta > 0){
-
+      if(info.venta){
         total += info.venta * PRECIO_LAMINA;
-
-        htmlVenta += `
-        <div class="lamina repetida-venta">
-          ${n} 💰 (${info.venta})
-          <button onclick="usarRepetida('${eq}',${n},'venta')">-</button>
-        </div>`;
       }
+
+      html += `
+      <div class="lamina repetida">
+
+        <span onclick="usarRepetida('${eq}',${n},'intercambio')">
+        🔁 ${info.intercambio || 0}
+        </span>
+
+        <br>
+
+        <span onclick="usarRepetida('${eq}',${n},'venta')">
+        💰 ${info.venta || 0}
+        </span>
+
+        <br>${n}
+
+      </div>`;
     }
 
-    cont.innerHTML += `
-    <div class="card">
-      <h3>${nombre}</h3>
-
-      <div>
-        <strong>🔁 Intercambio</strong>
-        <div class="grid">${htmlIntercambio || "Sin disponibles"}</div>
-      </div>
-
-      <div style="margin-top:10px;">
-        <strong>💰 Venta</strong>
-        <div class="grid">${htmlVenta || "Sin disponibles"}</div>
-      </div>
-
-    </div>`;
+    html += "</div></div>";
+    cont.innerHTML += html;
   }
 
   document.getElementById("valorTotal").innerText = `💰 $${total}`;
 }
-
 
 // ✅ INTERCAMBIO
 
