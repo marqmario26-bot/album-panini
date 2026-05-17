@@ -157,18 +157,13 @@ footer {
   background: rgba(0,0,0,0.2);
 }
 
-/* ✅ DASHBOARD */
-.dashboard-total {
-  margin: 10px;
-  padding: 12px;
-  background: #00aaff;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
-}
+
+/* ✅ DASHBOARD CONTENEDOR */
 #dashboardData {
   padding: 10px;
 }
+
+/* ✅ TARJETAS */
 #dashboardData div {
   margin: 8px 0;
   padding: 10px;
@@ -177,6 +172,24 @@ footer {
   font-size: 13px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
+
+/* ✅ BLOQUE TOTAL */
+.dashboard-total {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+/* ✅ EFECTO HOVER */
+#dashboardData div:hover {
+  transform: scale(1.02);
+  transition: 0.2s;
+}
+
 
 
 /* ✅ RESPONSIVE */
