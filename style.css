@@ -127,19 +127,80 @@ main {
   border: none;
 }
 
-/* ✅ BOTONES */
+
+/* ✅ CONTENEDOR SUPERIOR (BOTONES + INPUT FILE) */
+.form-rep,
+#album > div:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px;
+  align-items: center;
+}
+
 button {
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 8px 14px;
   border: none;
-  background: #3498db;
+  border-radius: 8px;
+  background: #2c7be5;
   color: white;
+  font-size: 13px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 button:hover {
-  background: #2980b9;
+  background: #1a5edb;
 }
+
+/* ✅ INPUT FILE MÁS LIMPIO */
+input[type="file"] {
+  font-size: 13px;
+  background: #1f2a44;
+  color: white;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+/* ✅ BUSCADORES (AMBOS) */
+#buscar,
+#buscarRep {
+  width: calc(100% - 20px);
+  margin: 10px;
+  padding: 10px;
+
+  border-radius: 10px;
+  border: none;
+
+  background: #0f1e3a;
+  color: white;
+
+  font-size: 14px;
+}
+
+/* ✅ SEPARACIÓN VISUAL ENTRE BLOQUES */
+#album,
+#repetidas {
+  padding-bottom: 10px;
+}
+
+/* ✅ ESPACIADO GENERAL */
+.form-rep + button,
+.form-rep + button + input {
+  margin-left: 10px;
+}
+
+/* ✅ MEJORA EN MOBILE */
+@media (max-width: 600px) {
+  button {
+    width: 100%;
+  }
+
+  input[type="file"] {
+    width: 100%;
+  }
+}
+
 
 /* ✅ TABS */
 .tab {
