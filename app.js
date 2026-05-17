@@ -323,6 +323,25 @@ function cambiarTab(tab){
   if(tab==="dashboard") renderDashboard();
 }
 
+// ✅ BUSCADOR (AGREGAR AQUÍ)// ✅ BUSCADOR (AGREGfunction filtrarEquipos(){
+
+function filtrarEquipos(){
+
+  let txt = document.getElementById("buscar").value.toLowerCase();
+
+  document.querySelectorAll(".equipo").forEach(card => {
+
+    let nombre = card.querySelector("h3").textContent.toLowerCase();
+
+    if(nombre.includes(txt)){
+      card.style.display = "block";
+    } else {
+      card.style.display = "none";
+    }
+
+  });
+}
+
 function init(){
   cargarEquipos();
   render();
