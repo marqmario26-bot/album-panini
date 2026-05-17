@@ -272,12 +272,14 @@ function exportarRepetidas(){
 // ✅ DASHBOARD (CORREGIDO)
 function renderDashboard(){
 
-  let cont = document.getElementById("dashboardData");
-  if(!cont) return;
+  if(!cont) return;  let cont = document.getElementById("dashboardData");
 
   cont.innerHTML = "";
 
   let grupo = [];
+
+  let totalGeneral = 0;
+  let faltantesGeneral = 0;
 
   for(let eq of equiposBase){
 
@@ -285,11 +287,14 @@ function renderDashboard(){
     let total = getMax(eq);
     let falt = data[eq].length;
 
+    totalGeneral += total;
+    faltantesGeneral += falt;
+
     let progreso = ((total - falt)/total*100).toFixed(1);
 
     if(["Panini","History","CC"].includes(nombre)){
       cont.innerHTML += `<div>${nombre}: ${progreso}%</div>`;
-    }else{
+    } else {
 
       grupo.push(`${nombre}: ${progreso}%`);
 
@@ -304,8 +309,15 @@ function renderDashboard(){
     cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
   }
 
+  let progresoTotal = ((totalGeneral - faltantesGeneral) / totalGeneral * 100).toFixed(1);
 
+  cont.innerHTML = `
+    <div class="dashboard-total">
+      🌎 Progreso total del álbum: ${progresoTotal}%
+    </div>
+  ` + cont.innerHTML;
 }
+
 
 // ✅ INIT
 function cargarEquipos(){
