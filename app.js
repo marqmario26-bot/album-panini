@@ -140,7 +140,7 @@ function renderRepetidas(){
   let cont = document.getElementById("contenedorRep");
   cont.innerHTML="";
 
-  for(let eq in data){
+  for(let eq of equiposBase){
 
     let max = getMax(eq);
     let lista = repetidas[eq] || {};
@@ -335,7 +335,6 @@ function cambiarTab(tab){
 
 // ✅ BUSCADOR (AGREGAR AQUÍ)// ✅ BUSCADOR (AGREGfunction filtrarEquipos(){
 
-
 function filtrarEquipos(){
 
   let txt = document.getElementById("buscar").value.toLowerCase();
@@ -344,10 +343,31 @@ function filtrarEquipos(){
 
     let nombre = card.querySelector("h3").textContent.toLowerCase();
 
-    card.style.display = nombre.includes(txt) ? "block" : "none";
+    if(nombre.includes(txt)){
+      card.style.display = "block";
+    } else {
+      card.style.display = "none";
+    }
+
   });
 }
 
+function filtrarRepetidas(){
+
+  let txt = document.getElementById("buscarRep").value.toLowerCase();
+
+  document.querySelectorAll("#contenedorRep .card").forEach(card => {
+
+    let nombre = card.querySelector("h3").textContent.toLowerCase();
+
+    if(nombre.includes(txt)){
+      card.style.display = "block";
+    } else {
+      card.style.display = "none";
+    }
+
+  });
+}
 
 function init(){
   cargarEquipos();
@@ -355,4 +375,5 @@ function init(){
 }
 
 init();
+
 
