@@ -158,13 +158,26 @@ footer {
 }
 
 /* ✅ DASHBOARD */
-#dashboardData div {
-  margin: 5px;
-  padding: 8px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 6px;
-  font-size: 12px;
+.dashboard-total {
+  margin: 10px;
+  padding: 12px;
+  background: #00aaff;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
 }
+#dashboardData {
+  padding: 10px;
+}
+#dashboardData div {
+  margin: 8px 0;
+  padding: 10px;
+  background: linear-gradient(135deg, #1f3c6d, #2c5aa0);
+  border-radius: 10px;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
 
 /* ✅ RESPONSIVE */
 @media (max-width: 600px) {
