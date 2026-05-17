@@ -272,7 +272,8 @@ function exportarRepetidas(){
 // ✅ DASHBOARD (CORREGIDO)
 function renderDashboard(){
 
-  if(!cont) return;  let cont = document.getElementById("dashboardData");
+  let cont = document.getElementById("dashboardData");
+  if(!cont) return;
 
   cont.innerHTML = "";
 
