@@ -17,7 +17,6 @@ const equiposBase = [
 ];
 
 
-
 // ✅ DATA
 let data = JSON.parse(localStorage.getItem("data")) || {};
 let repetidas = JSON.parse(localStorage.getItem("rep")) || {};
@@ -304,6 +303,8 @@ function renderDashboard(){
   if(grupo.length>0){
     cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
   }
+
+
 }
 
 // ✅ INIT
@@ -348,3 +349,4 @@ function init(){
 }
 
 init();
+
