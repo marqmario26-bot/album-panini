@@ -17,6 +17,7 @@ const equiposBase = [
 ];
 
 
+
 // ✅ DATA
 let data = JSON.parse(localStorage.getItem("data")) || {};
 let repetidas = JSON.parse(localStorage.getItem("rep")) || {};
@@ -270,10 +271,13 @@ function exportarRepetidas(){
 }
 
 // ✅ DASHBOARD (CORREGIDO)
-function renderDashboard(){
 
-  let cont = document.getElementById("dashboardData");
-  if(!cont) return;
+ 
+function renderDashboard(){
+  
+let cont = document.getElementById("dashboardData");
+if(!cont) return;
+
 
   cont.innerHTML = "";
 
@@ -318,6 +322,8 @@ function renderDashboard(){
     </div>
   ` + cont.innerHTML;
 }
+
+
 
 
 // ✅ INIT
