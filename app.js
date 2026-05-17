@@ -17,6 +17,18 @@ const equiposBase = [
 ];
 
 
+let guia = null;
+
+// ✅ cargar archivo JSON
+fetch("Guia_Coleccionista_Panini_2026.json")
+  .then(res => res.json())
+  .then(data => {
+    guia = data;
+  })
+  .catch(err => {
+    console.log("Error cargando guía", err);
+  });
+
 
 // ✅ DATA
 let data = JSON.parse(localStorage.getItem("data")) || {};
@@ -167,7 +179,6 @@ function renderRepetidas(){
 // ✅ INTERCAMBIO
 
 
-
 function renderIntercambio(){
 
   let cont = document.getElementById("resultado");
@@ -215,12 +226,41 @@ function renderIntercambio(){
     });
   }
  
-  if(sugerencias.length === 0){
-    cont.innerHTML = "Sin intercambios disponibles";
+ 
+// ✅ RENDER SIMPLE CON INFO
+
+sugerencias.forEach(s => {
+
+  let textoGuia = "";
+
+  if(guia){
+    let ref = guia.tablas?.find(t => t.tabla === 3);
+    if(ref){
+      textoGuia = ref.rows
+        .slice(0,3)
+        .map(r => `${r.Tipo} → ${r["Cambio recomendado"]}`)
+        .join("<br>");
+    }
   }
+
+  cont.innerHTML += `
+  <div class="card intercambio-card">
+
+    <strong>${s.nombre}</strong> - ${s.lamina}
+    <div>🔁 ${s.cantidad} disponibles</div>
+
+    <div class="info-guia">
+      💡 Referencia:
+      <br>${textoGuia || "Cargando guía..."}
+    </div>
+
+    <button onclick="hacerIntercambio('${s.eq}',${s.lamina})">✅</button>
+
+  </div>`;
+});
+
+
 }
-
-
 // ✅ HACER INTERCAMBIO
 function hacerIntercambio(eq,n){
 
@@ -333,8 +373,7 @@ function cambiarTab(tab){
   if(tab==="dashboard") renderDashboard();
 }
 
-// ✅ BUSCADOR (AGREGAR AQUÍ)// ✅ BUSCADOR (AGREGfunction filtrarEquipos(){
-
+// ✅ BUSCADOR (AGREGAR AQUÍ)// ✅ BUSCADOR 
 function filtrarEquipos(){
 
   let txt = document.getElementById("buscar").value.toLowerCase();
@@ -375,5 +414,6 @@ function init(){
 }
 
 init();
+
 
 
