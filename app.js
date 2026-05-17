@@ -94,99 +94,74 @@ function toggle(eq,n){
   guardar();
 }
 
-// ✅ AGREGAR REPETIDAS
+
+// ✅ AGREGAR REPETIDA
 function agregarRepetida(){
 
   let eq = document.getElementById("equipoRep").value;
   let num = Number(document.getElementById("numRep").value);
-  let tipo = document.getElementById("tipoRep").value;
 
   if(!num) return;
 
-  if(!repetidas[eq]){
-    repetidas[eq] = {};
-  }
+  if(!repetidas[eq]) repetidas[eq] = {};
 
   if(!repetidas[eq][num]){
-    repetidas[eq][num] = {intercambio:0, venta:0};
+    repetidas[eq][num] = 0;
   }
 
-  if(tipo==="venta"){
-    repetidas[eq][num].venta++;
-  }else{
-    repetidas[eq][num].intercambio++;
-  }
+  repetidas[eq][num]++;
 
-  guardar();
+  // eliminar de faltantes
+  data[eq] = data[eq].filter(x=>x!==num);
+
+  guardar(); // ✅ GUARDA AUTOMÁTICAMENTE
 }
 
+
 // ✅ USAR REPETIDA
-function usarRepetida(eq,n,tipo){
+function usarRepetida(eq,n){
 
-  let info = repetidas[eq]?.[n];
-  if(!info) return;
+  if(!repetidas[eq] || !repetidas[eq][n]) return;
 
-  if(tipo==="venta" && info.venta>0){
-    info.venta--;
-  }
+  repetidas[eq][n]--;
 
-  if(tipo==="intercambio" && info.intercambio>0){
-    info.intercambio--;
-  }
-
-  if(info.venta===0 && info.intercambio===0){
+  if(repetidas[eq][n] === 0){
     delete repetidas[eq][n];
   }
 
-  guardar();
+  guardar(); // ✅ GUARDA AUTOMÁTICAMENTE
 }
+
+
 
 // ✅ RENDER REPETIDAS
 function renderRepetidas(){
 
   let cont = document.getElementById("contenedorRep");
-  cont.innerHTML = "";
+  cont.innerHTML="";
 
-  let total = 0;
+  for(let eq in data){
 
-  for(let eq in repetidas){
+    let max = getMax(eq);
+    let lista = repetidas[eq] || {};
 
-    let nombre = eq.split("-")[0];
+    let html = `<div class="card"><h3>${eq}</h3><div class="grid">`;
 
-    let html = `<div class="card">
-    <h3>${nombre}</h3><div class="grid">`;
+    for(let i=1;i<=max;i++){
 
-    for(let n in repetidas[eq]){
+      let cant = lista[i] || 0;
 
-      let info = repetidas[eq][n];
-
-      if(info.venta){
-        total += info.venta * PRECIO_LAMINA;
-      }
-
-      html += `
-      <div class="lamina repetida">
-
-        <span onclick="usarRepetida('${eq}',${n},'intercambio')">
-        🔁 ${info.intercambio || 0}
-        </span>
-
-        <br>
-
-        <span onclick="usarRepetida('${eq}',${n},'venta')">
-        💰 ${info.venta || 0}
-        </span>
-
-        <br>${n}
-
+      html+=`
+      <div class="lamina ${cant>0?"repetida":""}" 
+           onclick="usarRepetida('${eq}',${i})">
+        ${i} ${cant>0?`(${cant})`:""}
       </div>`;
     }
 
-    html += "</div></div>";
-    cont.innerHTML += html;
-  }
+    html+="</div></div>";
 
-  document.getElementById("valorTotal").innerText = `💰 $${total}`;
+    cont.innerHTML+=html;
+  }
 }
 
 // ✅ INTERCAMBIO
@@ -239,21 +214,7 @@ function renderIntercambio(){
 
     });
   }
-
-  // ✅ ordenar por prioridad
-  sugerencias.sort((a,b) => b.prioridad - a.prioridad);
-
-  // ✅ render
-  sugerencias.forEach(s => {
-
-    cont.innerHTML += `
-    <div class="card">
-      <strong>${s.nombre}</strong> - ${s.lamina}
-      🔁 (${s.cantidad})
-      <button onclick="hacerIntercambio('${s.eq}',${s.lamina})">✅</button>
-    </div>`;
-  });
-
+ 
   if(sugerencias.length === 0){
     cont.innerHTML = "Sin intercambios disponibles";
   }
@@ -374,6 +335,7 @@ function cambiarTab(tab){
 
 // ✅ BUSCADOR (AGREGAR AQUÍ)// ✅ BUSCADOR (AGREGfunction filtrarEquipos(){
 
+
 function filtrarEquipos(){
 
   let txt = document.getElementById("buscar").value.toLowerCase();
@@ -382,14 +344,10 @@ function filtrarEquipos(){
 
     let nombre = card.querySelector("h3").textContent.toLowerCase();
 
-    if(nombre.includes(txt)){
-      card.style.display = "block";
-    } else {
-      card.style.display = "none";
-    }
-
+    card.style.display = nombre.includes(txt) ? "block" : "none";
   });
 }
+
 
 function init(){
   cargarEquipos();
@@ -397,3 +355,4 @@ function init(){
 }
 
 init();
+
