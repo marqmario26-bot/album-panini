@@ -10,7 +10,7 @@
 <body>
 
 <header class="banner">
-  <img src="img/banner.JPG" class="banner-img">
+  <img src="img/banner.jpg" class="banner-img">
   <div class="banner-overlay">
     <h1>⚽ Álbum Mundial 2026</h1>
   </div>
@@ -27,9 +27,6 @@
 <main>
 
 <!-- ÁLBUM -->
-
-
-
 
 <div id="album" class="tab">
 
@@ -55,10 +52,6 @@
 
 </div>
 
-
-
-
-
 <!-- REPETIDAS -->
 <div id="repetidas" class="tab oculto">
 
@@ -75,7 +68,16 @@
   </div>
 
   <button onclick="exportarRepetidas()">💾 Descargar Repetidas</button>
-  <input type="file" onchange="importarRepetidasArchivo(event)">
+  
+<input type="file" onchange="importarRepetidasArchivo(event)">
+
+<input id="buscarRep"
+       placeholder="🔎 Buscar repetidas..."
+       onkeyup="filtrarRepetidas()"
+       style="width:95%; margin:10px; padding:8px; border-radius:8px; border:none;">
+
+<div id="contenedorRep"></div>
+
 
   <div id="contenedorRep"></div>
   <h3 id="valorTotal"></h3>
@@ -99,4 +101,6 @@
 <script src="app.js"></script>
 </body>
 </html>
+
+
 
