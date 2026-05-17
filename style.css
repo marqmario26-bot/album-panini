@@ -309,3 +309,20 @@ footer {
   font-size: 18px;
   font-weight: bold;
 }
+
+.intercambio-card {
+  margin: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #1f3c6d;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info-guia {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 5px;
+}
+
