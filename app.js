@@ -225,7 +225,7 @@ let nombre = eq;
 let html = `<div class="card"><h3>${eq}</h3><div class="grid">`;
 
 
-    for(let i=1;i<=max;i++){
+   for(let i = getInicio(eq); i <= max; i++){
 
       let cant = lista[i] || 0;
 
@@ -296,7 +296,7 @@ function renderIntercambio(){
 
     // ✅ calcular faltantes reales
     let faltantes = [];
-    for(let i=1; i<=getMax(eq); i++){
+    for(let i = getInicio(eq); i <= getMax(eq); i++){
       if(!data[eq].includes(i)){
         faltantes.push(i);
       }
@@ -524,6 +524,5 @@ function init(){
 }
 
 init();
-
 
 
