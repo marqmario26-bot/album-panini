@@ -49,14 +49,25 @@ function guardar(){
 }
 
 // ✅ MAX
+
 function getMax(eq){
-  if(eq==="Panini") return 8;
-  if(eq==="History") return 19;
+  if(eq.startsWith("Panini")) return 8;
+  if(eq.startsWith("History")) return 19;
   if(eq==="CC") return 14;
   return 20;
 }
 
+
+function getInicio(eq){
+  if(eq.startsWith("Panini")) return 0;
+  if(eq.startsWith("History")) return 9; // ✅ AQUÍ ESTA EL CAMBIO
+  return 1;
+}
+
+
+
 // ✅ RENDER
+
 function render(){
 
   let cont = document.getElementById("contenedor");
@@ -74,7 +85,8 @@ function render(){
     let html = `<div class="card equipo">
     <h3>${nombre}</h3><div class="grid">`;
 
-    for(let i=1;i<=getMax(eq);i++){
+    // ✅ AQUÍ ESTA EL CAMBIO CORRECTO
+    for(let i = getInicio(eq); i <= getMax(eq); i++){
 
       let f = data[eq].includes(i);
 
@@ -95,6 +107,7 @@ function render(){
 
   renderRepetidas();
 }
+
 
 //✅ 1. IMPORTAR ALBUM
 function importarDataArchivo(event){
@@ -511,7 +524,6 @@ function init(){
 }
 
 init();
-
 
 
 
