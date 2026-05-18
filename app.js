@@ -158,7 +158,7 @@ function renderRepetidas(){
     let lista = repetidas[eq] || {};
 
     
-let nombre = eq.split("-")[0];
+let nombre = eq;
 
 let html = `<div class="card"><h3>${nombre}</h3><div class="grid">`;
 
