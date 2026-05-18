@@ -66,7 +66,7 @@ function render(){
 
   for(let eq of equiposBase){
 
-    let nombre = eq.split("-")[0];
+    
     let codigo = eq.includes("-")
       ? eq.split("-")[1]
       : eq.substring(0,3).toUpperCase();
