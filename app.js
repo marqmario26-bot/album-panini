@@ -410,12 +410,11 @@ function exportarData(){
 
 function exportarRepetidas(){
 
-  // ✅ 1. JSON (igual que antes)
+  // ✅ JSON
   descargarJSON(repetidas, "repetidas.json");
 
-  // ✅ 2. Preparar datos para Excel
+  // ✅ preparar datos
   let filas = [];
-
   filas.push(["Equipo", "Lamina", "Cantidad"]);
 
   for(let eq of equiposBase){
@@ -433,15 +432,28 @@ function exportarRepetidas(){
     });
   }
 
-  // ✅ 3. Crear hoja Excel
+  // ✅ crear hoja
   let ws = XLSX.utils.aoa_to_sheet(filas);
-
-  // ✅ 4. Crear libro
   let wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Repetidas");
 
-  // ✅ 5. Descargar archivo Excel
-  XLSX.writeFile(wb, "repetidas.xlsx");
+  // ✅ 💥 FIX PARA CELULAR
+  let wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+
+  let blob = new Blob([wbout], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  });
+
+  let url = URL.createObjectURL(blob);
+
+  let a = document.createElement("a");
+  a.href = url;
+  a.download = "repetidas.xlsx";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
 }
 
 
