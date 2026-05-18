@@ -96,6 +96,55 @@ function render(){
   renderRepetidas();
 }
 
+//✅ 1. IMPORTAR ALBUM
+function importarDataArchivo(event){
+
+  let archivo = event.target.files[0];
+  if(!archivo) return;
+
+  let reader = new FileReader();
+
+  reader.onload = function(e){
+
+    try{
+      let dataImportada = JSON.parse(e.target.result);
+
+      // ✅ validar estructura básica
+      if(typeof dataImportada !== "object"){
+        alert("Archivo inválido");
+        return;
+      }
+
+      data = dataImportada;
+
+      guardaNormalizada(); // ✅ importante (ver abajo)
+      guardar();
+
+      alert("✅ Álbum cargado correctamente");
+
+    }catch(err){
+      alert("Error al leer el archivo");
+      console.log(err);
+    }
+
+  };
+
+  reader.readAsText(archivo);
+}
+
+// ✅ TOGGLE Normalizar
+
+function guardaNormalizada(){
+
+  equiposBase.forEach(eq => {
+    if(!data[eq] || !Array.isArray(data[eq])){
+      data[eq] = [];
+    }
+  });
+
+}
+
+
 // ✅ TOGGLE
 function toggle(eq,n){
   if(data[eq].includes(n)){
@@ -179,6 +228,42 @@ let html = `<div class="card"><h3>${eq}</h3><div class="grid">`;
     cont.innerHTML+=html;
   }
 }
+
+// ✅ IMPORTAR REPETIDAS
+
+function importarRepetidasArchivo(event){
+
+  let archivo = event.target.files[0];
+  if(!archivo) return;
+
+  let reader = new FileReader();
+
+  reader.onload = function(e){
+
+    try{
+      let repetidasImportadas = JSON.parse(e.target.result);
+
+      if(typeof repetidasImportadas !== "object"){
+        alert("Archivo inválido");
+        return;
+      }
+
+      repetidas = repetidasImportadas;
+
+      guardar();
+
+      alert("✅ Repetidas cargadas correctamente");
+
+    }catch(err){
+      alert("Error al leer el archivo");
+      console.log(err);
+    }
+
+  };
+
+  reader.readAsText(archivo);
+}
+
 
 // ✅ INTERCAMBIO
 
