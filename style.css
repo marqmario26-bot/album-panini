@@ -270,21 +270,23 @@ footer {
 
 
 /* ✅ RESPONSIVE */
+
 @media (max-width: 600px) {
 
- 
-.lamina {
-  padding: 6px;
-  width: 36px;
-  height: 36px
-  border-radius: 50%;
-  text-align: center;
-  font-size: 11px;
-  cursor: pointer;
-  transition: 0.2s ease;
-  font-weight: 600; /* ✅ más legible */
+  .lamina {
+    padding: 6px;
+    width: 36px;
+    height: 36px; /* ✅ CORREGIDO */
+    border-radius: 50%; /* ✅ mantiene circulares */
+    text-align: center;
+    font-size: 11px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-weight: 600;
+  }
+
 }
-}
+
 
 
   nav button {
