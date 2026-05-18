@@ -68,8 +68,9 @@ main {
 .card {
   margin: 10px 5px;
   padding: 10px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px
+
 }
 
 .card h3 {
@@ -80,8 +81,8 @@ main {
 /* ✅ GRID DE LÁMINAS */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
-  gap: 5px;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 8px;
 }
 
 /* ✅ LÁMINAS */
@@ -100,15 +101,15 @@ main {
 
 /* ✅ ESTADOS */
 .faltante {
-  background: #e74c3c;
+  background: #ff6b6b;
 }
 
 .conseguida {
-  background: #2ecc71;
+  background: #4cd97b;
 }
 
 .repetida {
-  background: #f1c40f;
+  background: #ffd166;
   color: black;
 }
 
@@ -138,20 +139,19 @@ main {
   align-items: center;
 }
 
+
 button {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  background: #2c7be5;
-  color: white;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
+  padding: 10px 16px; /* ⬅ más grande */
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4ea3ff, #2c7be5);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 button:hover {
-  background: #1a5edb;
+  background: linear-gradient(135deg, #6fb8ff, #3a90f0);
 }
+
 
 /* ✅ INPUT FILE MÁS LIMPIO */
 input[type="file"] {
@@ -255,10 +255,21 @@ footer {
 /* ✅ RESPONSIVE */
 @media (max-width: 600px) {
 
-  .lamina {
-    font-size: 10px;
-    padding: 5px;
-  }
+ .lamina {
+  padding: 8px;
+  border-radius: 50%; /* ⬅ circular */
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+}
+
 
   nav button {
     font-size: 14px;
@@ -325,4 +336,5 @@ footer {
   opacity: 0.8;
   margin-top: 5px;
 }
+
 
