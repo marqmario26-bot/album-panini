@@ -284,6 +284,14 @@ footer {
     transition: 0.2s ease;
     font-weight: 600;
   }
+.conseguida {
+  background: #8fd0ff; /* ✅ azul más claro en móvil */
+}
+
+.faltante {
+  background: #b0b5bb; /* ✅ gris más claro */
+}
+
 
 }
 
