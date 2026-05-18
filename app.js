@@ -406,9 +406,45 @@ function exportarData(){
   descargarJSON(data,"album.json");
 }
 
+
+
 function exportarRepetidas(){
-  descargarJSON(repetidas,"repetidas.json");
+
+  // ✅ 1. JSON (igual que antes)
+  descargarJSON(repetidas, "repetidas.json");
+
+  // ✅ 2. Preparar datos para Excel
+  let filas = [];
+
+  filas.push(["Equipo", "Lamina", "Cantidad"]);
+
+  for(let eq of equiposBase){
+
+    let lista = repetidas[eq] || {};
+
+    Object.keys(lista).forEach(num => {
+
+      let cantidad = lista[num];
+
+      if(cantidad > 0){
+        filas.push([eq, Number(num), cantidad]);
+      }
+
+    });
+  }
+
+  // ✅ 3. Crear hoja Excel
+  let ws = XLSX.utils.aoa_to_sheet(filas);
+
+  // ✅ 4. Crear libro
+  let wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Repetidas");
+
+  // ✅ 5. Descargar archivo Excel
+  XLSX.writeFile(wb, "repetidas.xlsx");
 }
+
+
 
 // ✅ DASHBOARD (CORREGIDO)
 
