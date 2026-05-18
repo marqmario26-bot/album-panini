@@ -2,7 +2,7 @@ const PRECIO_LAMINA = 700;
 
 // ✅ EQUIPOS BASE
 const equiposBase = [
-"Panini","Mexico-MEX","South Africa-RSA","Korea-KOR","Czechia-CZE",
+"Panini-FWC","Mexico-MEX","South Africa-RSA","Korea-KOR","Czechia-CZE",
 "Canada-CAN","Bosnia-BIH","Qatar-QAT","Switzerland-SUI",
 "Brasil-BRA","Marocco-MAR","Haiti-HAI","Scotland-SCO","USA-USA",
 "Paraguay-PAR","Australia-AUS","Turkiye-TUR","Germany-GER",
@@ -13,7 +13,7 @@ const equiposBase = [
 "Iraq-IRQ","Norway-NOR","Argentina-ARG","Algeria-ALG","Austria-AUT",
 "Jordan-JOR","Portugal-POR","Congo Dr-COD","Usbekistan-UZB",
 "Colombia-COL","England-ENG","Croatia-CRO","Ghana-GHA","Panama-PAN",
-"History","CC"
+"History-FWC","CC"
 ];
 
 
