@@ -160,7 +160,7 @@ function renderRepetidas(){
     
 let nombre = eq;
 
-let html = `<div class="card"><h3>${nombre}</h3><div class="grid">`;
+let html = `<div class="card"><h3>${eq}</h3><div class="grid">`;
 
 
     for(let i=1;i<=max;i++){
