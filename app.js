@@ -157,7 +157,11 @@ function renderRepetidas(){
     let max = getMax(eq);
     let lista = repetidas[eq] || {};
 
-    let html = `<div class="card"><h3>${eq}</h3><div class="grid">`;
+    
+let nombre = eq.split("-")[0];
+
+let html = `<div class="card"><h3>${nombre}</h3><div class="grid">`;
+
 
     for(let i=1;i<=max;i++){
 
