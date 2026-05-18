@@ -11,7 +11,7 @@ const equiposBase = [
 "Ir Iran-IRN","New Zealand-NZL","Spain-ESP","Cabo Verde-CPV",
 "Saudi Arabia-KSA","Uruguay-URU","France-FRA","Senegal-SEN",
 "Iraq-IRQ","Norway-NOR","Argentina-ARG","Algeria-ALG","Austria-AUT",
-"Jordan-JOR","Portugal-POR","Congo Dr-COD","Usbekistan-UZB",
+"Jordan-JOR","Portugal-POR","Congo Dr-COD","Uzbekistan-UZB",
 "Colombia-COL","England-ENG","Croatia-CRO","Ghana-GHA","Panama-PAN",
 "History-FWC","CC"
 ];
