@@ -32,7 +32,7 @@ body {
 /* ✅ NAVEGACIÓN */
 nav {
   display: flex;
-  background: rgba(20, 40, 90, 0.9);
+  background: rgba(255,255,255,0.1);
 }
 
 nav button {
@@ -40,7 +40,7 @@ nav button {
   padding: 12px;
   border: none;
   background: transparent;
-  color: white;
+  color: rgb(14, 13, 13);
   font-size: 16px;
   cursor: pointer;
 }
@@ -101,11 +101,17 @@ main {
 
 /* ✅ ESTADOS */
 .faltante {
-  background: #ff6b6b;
+  
+  background: #9aa0a6; /* gris ratón */
+  color: white; /* ✅ se ve */
+
 }
 
 .conseguida {
-  background: #4cd97b;
+  
+  background: #6fb8ff; /* azul claro */
+  color: #0a1f44; /* ✅ contraste */
+
 }
 
 .repetida {
@@ -141,15 +147,17 @@ main {
 
 
 button {
-  padding: 10px 16px; /* ⬅ más grande */
+  padding: 10px 16px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #4ea3ff, #2c7be5);
+  background: linear-gradient(180deg, #0a1f44, #0d2c66);
   font-size: 14px;
   font-weight: 500;
+
+  color: white; /* ✅ AQUI VA EL CAMBIO */
 }
 
 button:hover {
-  background: linear-gradient(135deg, #6fb8ff, #3a90f0);
+  background: linear-gradient(180deg, #0a1f44, #0d2c66);
 }
 
 
@@ -236,7 +244,7 @@ footer {
 
 /* ✅ BLOQUE TOTAL */
 .dashboard-total {
-  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  background: linear-gradient(180deg, #0a1f44, #0d2c66);
   font-size: 16px;
   font-weight: bold;
   text-align: center;
@@ -255,20 +263,18 @@ footer {
 /* ✅ RESPONSIVE */
 @media (max-width: 600px) {
 
- .lamina {
-  padding: 8px;
-  border-radius: 50%; /* ⬅ circular */
+ 
+.lamina {
+  padding: 6px;
+  border-radius: 6px;
   text-align: center;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
+  transition: 0.2s ease;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 40px;
-  height: 40px;
+  font-weight: 600; /* ✅ más legible */
 }
+
 
 
   nav button {
