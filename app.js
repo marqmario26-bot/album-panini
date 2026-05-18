@@ -61,12 +61,12 @@ function render(){
 
   let cont = document.getElementById("contenedor");
   cont.innerHTML = "";
-
+  
   let falt = 0;
 
   for(let eq of equiposBase){
 
-    
+    let nombre = eq;
     let codigo = eq.includes("-")
       ? eq.split("-")[1]
       : eq.substring(0,3).toUpperCase();
