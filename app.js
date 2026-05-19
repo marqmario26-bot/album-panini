@@ -288,6 +288,7 @@ function importarRepetidasArchivo(event){
 // ✅ INTERCAMBIO
 
 
+
 function renderIntercambio(){
 
   let cont = document.getElementById("resultado");
@@ -300,6 +301,11 @@ function renderIntercambio(){
   for(let eq of equiposBase){
 
     let nombre = eq;
+
+    // ✅ obtener código (COL, MEX, etc.)
+    let codigo = eq.includes("-")
+      ? eq.split("-")[1]
+      : eq.substring(0,3).toUpperCase();
 
     // ✅ calcular faltantes reales
     let faltantes = [];
@@ -325,6 +331,7 @@ function renderIntercambio(){
         sugerencias.push({
           eq,
           nombre,
+          codigo, // ✅ agregado
           lamina: n,
           cantidad: info,
           prioridad
@@ -334,50 +341,53 @@ function renderIntercambio(){
 
     });
   }
-  
-if(sugerencias.length === 0){
-  cont.innerHTML = `
-    <div class="card">
-      No hay intercambios sugeridos
-    </div>`;
-}
 
- 
- 
-// ✅ RENDER SIMPLE CON INFO
-
-sugerencias.forEach(s => {
-
-  let textoGuia = "";
-
-  if(guia){
-    let ref = guia.tablas?.find(t => t.tabla === 3);
-    if(ref){
-      textoGuia = ref.rows
-        .slice(0,3)
-        .map(r => `${r.Tipo} → ${r["Cambio recomendado"]}`)
-        .join("<br>");
-    }
+  if(sugerencias.length === 0){
+    cont.innerHTML = `
+      <div class="card">
+        No hay intercambios sugeridos
+      </div>`;
+    return;
   }
 
-  cont.innerHTML += `
-  <div class="intercambio-item">
+  // ✅ RENDER COMPACTO
+  sugerencias.forEach(s => {
 
-    ${s.nombre} - ${s.lamina} 🔁 ${s.cantidad}
-    
+    let textoGuia = "";
 
-    <div class="info-guia">
-      💡 Referencia:
-      <br>${textoGuia || "Cargando guía..."}
-    </div>
+    if(guia){
+      let ref = guia.tablas?.find(t => t.tabla === 3);
+      if(ref){
+        textoGuia = ref.rows
+          .slice(0,3)
+          .map(r => `${r.Tipo} → ${r["Cambio recomendado"]}`)
+          .join("<br>");
+      }
+    }
 
-    <button onclick="hacerIntercambio('${s.eq}',${s.lamina})">✅</button>
+    cont.innerHTML += `
+    <div class="intercambio-item">
 
-  </div>`;
-});
+      <!-- ✅ FORMATO CORRECTO -->
+      <span class="info-principal">
+        ${s.codigo}-${s.lamina} 🔁 ${s.cantidad}
+      </span>
 
+      <!-- ✅ BOTÓN GUÍA -->
+      <button onclick="toggleGuia(this)">💡</button>
 
+      <!-- ✅ BOTÓN ACCIÓN -->
+      <button onclick="hacerIntercambio('${s.eq}',${s.lamina})">✅</button>
+
+      <!-- ✅ GUÍA OCULTA -->
+      <div class="info-guia oculto">
+        ${textoGuia || "Cargando guía..."}
+      </div>
+
+    </div>`;
+  });
 }
+
 // ✅ HACER INTERCAMBIO
 function hacerIntercambio(eq,n){
 
