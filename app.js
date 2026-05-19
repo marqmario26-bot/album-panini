@@ -375,9 +375,6 @@ function renderIntercambio(){
       <!-- ✅ BOTÓN GUÍA -->
       <button onclick="toggleGuia(this)">💡</button>
 
-      <!-- ✅ BOTÓN ACCIÓN -->
-      <button onclick="hacerIntercambio('${s.eq}',${s.lamina})">✅</button>
-
       <!-- ✅ GUÍA OCULTA -->
       <div class="info-guia oculto">
         ${textoGuia || "Cargando guía..."}
