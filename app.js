@@ -359,7 +359,6 @@ function renderIntercambio(){
       let ref = guia.tablas?.find(t => t.tabla === 3);
       if(ref){
         textoGuia = ref.rows
-          .slice(0,3)
           .map(r => `${r.Tipo} → ${r["Cambio recomendado"]}`)
           .join("<br>");
       }
