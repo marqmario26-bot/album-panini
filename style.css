@@ -40,7 +40,7 @@ nav button {
   padding: 12px;
   border: none;
   background: transparent;
-  color: rgb(14, 13, 13);
+  color: white;
   font-size: 16px;
   cursor: pointer;
 }
@@ -49,15 +49,21 @@ nav button:hover {
   background: rgba(255,255,255,0.08);
 }
 
-/* ✅ BUSCADOR */
-#buscar {
-  width: 95%;
-  margin: 10px auto;
-  display: block;
-  padding: 8px;
-  border-radius: 8px;
+
+.input-buscador {
+  width: calc(100% - 20px);
+  margin: 10px;
+  padding: 10px;
+
+  border-radius: 10px;
   border: none;
+
+  background: #0f1e3a;
+  color: white;
+
+  font-size: 14px;
 }
+
 
 /* ✅ CONTENEDOR */
 main {
@@ -201,6 +207,13 @@ input[type="file"] {
   padding-bottom: 10px;
 }
 
+
+#resultado {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+
 /* ✅ ESPACIADO GENERAL */
 .form-rep + button,
 .form-rep + button + input {
@@ -229,11 +242,15 @@ input[type="file"] {
 }
 
 /* ✅ FOOTER */
+
 footer {
   text-align: center;
   padding: 10px;
   background: rgba(0,0,0,0.2);
+  font-size: 12px;
+  opacity: 0.8;
 }
+
 
 
 /* ✅ DASHBOARD CONTENEDOR */
@@ -353,9 +370,32 @@ footer {
   gap: 5px;
 }
 
-.info-guia {
+
+
+.intercambio-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  margin: 4px 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
   font-size: 12px;
+  gap: 6px;
+  flex-wrap: wrap; /* ✅ IMPORTANTE */
+}
+
+
+.intercambio-item button {
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+
+.info-guia {
+  font-size: 11px;
   opacity: 0.8;
   margin-top: 5px;
+  width: 100%; /* ✅ ocupa línea completa */
 }
 
