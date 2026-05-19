@@ -50,7 +50,12 @@ nav button:hover {
 }
 
 
+
 .input-buscador {
+  position: sticky;   /* ✅ clave para que no desaparezca */
+  top: 0;             /* ✅ se pega arriba */
+  z-index: 5;         /* ✅ queda encima del contenido */
+
   width: calc(100% - 20px);
   margin: 10px;
   padding: 10px;
@@ -62,7 +67,10 @@ nav button:hover {
   color: white;
 
   font-size: 14px;
+
+  box-shadow: 0 0 6px rgba(0,0,0,0.3); /* ✅ mejora visual */
 }
+
 
 
 /* ✅ CONTENEDOR */
@@ -183,22 +191,6 @@ input[type="file"] {
   color: white;
   padding: 6px;
   border-radius: 6px;
-}
-
-/* ✅ BUSCADORES (AMBOS) */
-#buscar,
-#buscarRep {
-  width: calc(100% - 20px);
-  margin: 10px;
-  padding: 10px;
-
-  border-radius: 10px;
-  border: none;
-
-  background: #0f1e3a;
-  color: white;
-
-  font-size: 14px;
 }
 
 /* ✅ SEPARACIÓN VISUAL ENTRE BLOQUES */
@@ -404,3 +396,35 @@ footer {
   line-height: 1.3;     /* ✅ mejora legibilidad */
   white-space: normal;  /* ✅ evita que se corte */
 }
+
+
+/* ✅ SCROLL PARA ÁLBUM, REPETIDAS E INTERCAMBIO */
+#contenedor,
+#contenedorRep,
+#resultado {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* ✅ SCROLL PERSONALIZADO */
+#contenedor::-webkit-scrollbar,
+#contenedorRep::-webkit-scrollbar,
+#resultado::-webkit-scrollbar {
+  position: relative;
+  width: 6px;
+}
+
+#contenedor::-webkit-scrollbar-thumb,
+#contenedorRep::-webkit-scrollbar-thumb,
+#resultado::-webkit-scrollbar-thumb {
+  background: #6fb8ff;
+  border-radius: 10px;
+}
+
+#contenedor::-webkit-scrollbar-track,
+#contenedorRep::-webkit-scrollbar-track,
+#resultado::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
+
