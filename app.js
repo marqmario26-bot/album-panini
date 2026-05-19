@@ -68,6 +68,7 @@ function getInicio(eq){
 
 // ✅ RENDER
 
+
 function render(){
 
   let cont = document.getElementById("contenedor");
@@ -85,7 +86,6 @@ function render(){
     let html = `<div class="card equipo">
     <h3>${nombre}</h3><div class="grid">`;
 
-    // ✅ AQUÍ ESTA EL CAMBIO CORRECTO
     for(let i = getInicio(eq); i <= getMax(eq); i++){
 
       let f = data[eq].includes(i);
@@ -103,10 +103,17 @@ function render(){
     cont.innerHTML += html;
   }
 
-  document.getElementById("progreso").innerText = `Faltan ${falt}`;
+  // ✅ TEXTO DEL FOOTER CORRECTO
+  document.getElementById("progreso").innerHTML = `
+    Faltan ${falt}
+    <br>
+    <small>App v1.0 · Desarrollado por Mario Márquez © 2026</small>
+  `;
 
+  // ✅ FUERA DEL STRING
   renderRepetidas();
 }
+
 
 
 //✅ 1. IMPORTAR ALBUM
@@ -292,7 +299,7 @@ function renderIntercambio(){
 
   for(let eq of equiposBase){
 
-    let nombre = eq.split("-")[0];
+    let nombre = eq;
 
     // ✅ calcular faltantes reales
     let faltantes = [];
@@ -354,10 +361,10 @@ sugerencias.forEach(s => {
   }
 
   cont.innerHTML += `
-  <div class="card intercambio-card">
+  <div class="intercambio-item">
 
-    <strong>${s.nombre}</strong> - ${s.lamina}
-    <div>🔁 ${s.cantidad} disponibles</div>
+    ${s.nombre} - ${s.lamina} 🔁 ${s.cantidad}
+    
 
     <div class="info-guia">
       💡 Referencia:
@@ -408,6 +415,7 @@ function exportarData(){
 
 
 
+
 function exportarRepetidas(){
 
   // ✅ JSON
@@ -455,6 +463,7 @@ function exportarRepetidas(){
 
   URL.revokeObjectURL(url);
 }
+
 
 
 
@@ -565,6 +574,25 @@ function filtrarRepetidas(){
 
   });
 }
+
+
+function filtrarIntercambio(){
+
+  let txt = document.getElementById("buscarInter").value.toLowerCase();
+
+  document.querySelectorAll("#resultado .intercambio-item").forEach(card => {
+
+    let texto = card.textContent.toLowerCase();
+
+    if(texto.includes(txt)){
+      card.style.display = "flex";
+    } else {
+      card.style.display = "none";
+    }
+
+  });
+}
+
 
 function init(){
   cargarEquipos();
