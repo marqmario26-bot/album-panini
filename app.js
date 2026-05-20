@@ -105,8 +105,6 @@ function render(){
 
   // ✅ TEXTO DEL FOOTER CORRECTO
   document.getElementById("progreso").innerHTML = `
-    Faltan ${falt}
-    <br>
     <small>App v1.0 · Desarrollado por Mario Márquez © 2026</small>
   `;
 
@@ -498,13 +496,15 @@ if(!cont) return;
     totalGeneral += total;
     faltantesGeneral += falt;
 
+    let conseguidas = total - falt;
+
     let progreso = ((total - falt)/total*100).toFixed(1);
 
     if(["Panini","History","CC"].includes(nombre)){
       cont.innerHTML += `<div>${nombre}: ${progreso}%</div>`;
     } else {
 
-      grupo.push(`${nombre}: ${progreso}%`);
+      grupo.push(`${nombre}: ${conseguidas}/${total} (${progreso}%)`);
 
       if(grupo.length===4){
         cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
@@ -517,13 +517,20 @@ if(!cont) return;
     cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
   }
 
-  let progresoTotal = ((totalGeneral - faltantesGeneral) / totalGeneral * 100).toFixed(1);
+  
+let conseguidasGeneral = totalGeneral - faltantesGeneral;
+let progresoTotal = ((conseguidasGeneral) / totalGeneral * 100).toFixed(1);
 
-  cont.innerHTML = `
-    <div class="dashboard-total">
-      🌎 Progreso total del álbum: ${progresoTotal}%
-    </div>
-  ` + cont.innerHTML;
+
+  
+cont.innerHTML = `
+  <div class="dashboard-total">
+    🌎 Progreso total del álbum: ${progresoTotal}% 
+    <br>
+    🌎 Faltan: ${faltantesGeneral}
+  </div>
+` + cont.innerHTML;
+
 }
 
 
@@ -606,5 +613,6 @@ function init(){
 }
 
 init();
+
 
 
