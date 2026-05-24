@@ -224,6 +224,7 @@ function importarDataArchivo(event) {
       data = convertirAlbumSiVieneComoFaltantes(dataImportada);
 
       guardaNormalizada();
+      normalizarRepetidas();
       guardar();
 
       alert("✅ Álbum cargado correctamente");
@@ -287,6 +288,57 @@ function agregarRepetida(){
 }
 
 
+// ✅ NORMALIZAR REPETIDAS
+function normalizarRepetidas() {
+  let limpio = {};
+
+  equiposBase.forEach(eq => {
+    let lista = repetidas[eq];
+    limpio[eq] = {};
+
+    if (!lista || typeof lista !== "object" || Array.isArray(lista)) {
+      return;
+    }
+
+    let inicio = getInicio(eq);
+    let max = getMax(eq);
+
+    Object.keys(lista).forEach(num => {
+      let n = Number(num);
+      let valor = lista[num];
+      let cantidad = 0;
+
+      // número normal
+      if (typeof valor === "number") {
+        cantidad = valor;
+      }
+
+      // string
+      else if (typeof valor === "string") {
+        cantidad = Number(valor) || 0;
+      }
+
+      // objeto (por si en futuro cambias estructura)
+      else if (valor && typeof valor === "object") {
+        cantidad = Number(valor.cantidad) || 0;
+      }
+
+      if (
+        Number.isInteger(n) &&
+        n >= inicio &&
+        n <= max &&
+        cantidad > 0
+      ) {
+        limpio[eq][n] = cantidad;
+      }
+    });
+  });
+
+  repetidas = limpio;
+}
+
+
+  
 // ✅ USAR REPETIDA
 
 
@@ -371,13 +423,10 @@ function importarRepetidasArchivo(event){
         return;
       }
 
+      
       repetidas = repetidasImportadas;
+      normalizarRepetidas();
 
-      equiposBase.forEach(eq => {
-        if (!repetidas[eq] || typeof repetidas[eq] !== "object" || Array.isArray(repetidas[eq])) {
-          repetidas[eq] = {};
-        }
-      });
 
       guardar();
 
@@ -414,22 +463,37 @@ function renderIntercambio() {
     let listaRep = repetidas[eq];
 
     // validar que exista objeto de repetidas para ese equipo
-    if (!listaRep || typeof listaRep !== "object" || Array.isArray(listaRep)) {
-      continue;
-    }
+    
+Object.keys(listaRep).forEach(num => {
+  let valor = listaRep[num];
+  let cantidad = 0;
 
-    Object.keys(listaRep).forEach(num => {
-      let cantidad = Number(listaRep[num]) || 0;
+  // ✅ caso 1: número normal
+  if (typeof valor === "number") {
+    cantidad = valor;
+  }
 
-      if (cantidad > 0) {
-        sugerencias.push({
-          eq,
-          codigo,
-          lamina: Number(num),
-          cantidad
-        });
-      }
+  // ✅ caso 2: viene como string
+  else if (typeof valor === "string") {
+    cantidad = Number(valor) || 0;
+  }
+
+  // ✅ caso 3: viene como objeto
+  else if (valor && typeof valor === "object") {
+    cantidad = Number(valor.cantidad) || 0;
+  }
+
+  if (cantidad > 0) {
+    sugerencias.push({
+      eq,
+      codigo,
+      lamina: Number(num),
+      cantidad
     });
+  }
+});
+
+
   }
 
   // ordenar por equipo y número
@@ -750,7 +814,7 @@ function init(){
 
 init();
 
-init();
+
 
 
 
