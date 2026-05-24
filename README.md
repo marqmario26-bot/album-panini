@@ -48,23 +48,47 @@ El proyecto está construido con **HTML + CSS + JavaScript puro** y usa **`local
   - filtrar láminas fuera del rango válido por equipo,
   - ordenar listas de láminas.
 
-### 2. Gestión de repetidas
+
+#### 2. Gestión de repetidas
 
 - Registro de repetidas por equipo y número de lámina.
 - Uso de repetidas directamente desde la vista de repetidas.
 - Las repetidas registradas también se reflejan como conseguidas en el álbum.
-- Importación de repetidas desde archivo `.json`.
+- Importación de repetidas desde archivo .json.
 - Exportación de repetidas en:
-  - `repetidas.json`
-  - `repetidas.xlsx`
+  - repetidas.json
+  - repetidas.xlsx
 
-### 3. Intercambio sugerido
+✅ **NUEVAS MEJORAS:**
+- Normalización de repetidas mediante `normalizarRepetidas()` para:
+  - convertir valores a número,
+  - validar rangos por equipo,
+  - eliminar datos inconsistentes,
+  - garantizar estructura uniforme.
+  
+- Mejora en ingreso de repetidas:
+  - selección dinámica de lámina según el equipo (`select` en lugar de input manual),
+  - reducción de errores de digitación,
+  - mejor experiencia en móviles.
+
+
+
+#### 3. Intercambio sugerido
 
 - Construcción del listado a partir de las repetidas disponibles.
 - Visualización por código de equipo + número de lámina.
 - Búsqueda dentro del listado de intercambio sugerido.
-- Modal de guía con información de canje basada en `Guia_Coleccionista_Panini_2026.json`.
+- Modal de guía con información de canje basada en Guia_Coleccionista_Panini_2026.json.
 - Cierre del modal con botón dedicado.
+
+✅ **MEJORA RECIENTE:**
+- Corrección de `renderIntercambio()` para soportar múltiples formatos de datos:
+  - número (estructura actual),
+  - string (datos antiguos/importados),
+  - objeto (posibles ampliaciones futuras).
+  
+Esto garantiza que el intercambio sugerido siempre funcione correctamente incluso con datos importados o versiones anteriores.
+
 
 ### 4. Dashboard
 
