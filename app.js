@@ -498,8 +498,8 @@ Object.keys(listaRep).forEach(num => {
 
   // ordenar por equipo y número
   sugerencias.sort((a, b) => {
-    if (a.eq !== b.eq) return a.eq.localeCompare(b.eq);
-    return a.lamina - b.lamina;
+    return equiposBase.indexOf(a.eq) - equiposBase.indexOf(b.eq)
+    || a.lamina - b.lamina;
   });
 
   if (sugerencias.length === 0) {
