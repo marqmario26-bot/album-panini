@@ -1,5 +1,3 @@
-const PRECIO_LAMINA = 700;
-
 // ✅ EQUIPOS BASE
 const equiposBase = [
 "Panini-FWC","Mexico-MEX","South Africa-RSA","Korea-KOR","Czechia-CZE",
@@ -20,10 +18,16 @@ const equiposBase = [
 let guia = null;
 
 // ✅ cargar archivo JSON
+
 fetch("Guia_Coleccionista_Panini_2026.json")
-  .then(res => res.json())
-  .then(data => {
-    guia = data;
+  .then(res => {
+    if (!res.ok) {
+      throw new Error("No se pudo cargar la guía");
+    }
+    return res.json();
+  })
+  .then(json => {
+    guia = json;
   })
   .catch(err => {
     console.log("Error cargando guía", err);
@@ -31,22 +35,103 @@ fetch("Guia_Coleccionista_Panini_2026.json")
 
 
 // ✅ DATA
-let data = JSON.parse(localStorage.getItem("data")) || {};
-let repetidas = JSON.parse(localStorage.getItem("rep")) || {};
 
-// ✅ NORMALIZAR
-equiposBase.forEach(eq=>{
-  if(!data[eq] || !Array.isArray(data[eq])){
-    data[eq] = [];
+let repetidas = JSON.parse(localStorage.getItem("rep")) || {};
+let data = JSON.parse(localStorage.getItem("data")) || {};
+
+// ✅ NORMALIZAR ÁLBUM
+
+function guardaNormalizada() {
+  let limpio = {};
+
+  equiposBase.forEach(eq => {
+    let lista = Array.isArray(data[eq]) ? data[eq] : [];
+    let inicio = getInicio(eq);
+    let max = getMax(eq);
+
+    limpio[eq] = [...new Set(
+      lista
+        .map(v => Number(v))
+        .filter(n => Number.isInteger(n) && n >= inicio && n <= max)
+    )].sort((a, b) => a - b);
+  });
+
+  data = limpio;
+}
+
+
+// ✅ ejecutar una vez al iniciar
+guardaNormalizada()
+
+function convertirAlbumSiVieneComoFaltantes(dataImportada) {
+  let convertido = {};
+  let totalEsperado = 0;
+  let totalImportado = 0;
+
+  equiposBase.forEach(eq => {
+    let inicio = getInicio(eq);
+    let max = getMax(eq);
+    let totalEq = max - inicio + 1;
+    totalEsperado += totalEq;
+
+    let lista = Array.isArray(dataImportada[eq]) ? dataImportada[eq].map(Number) : [];
+    totalImportado += lista.length;
+  });
+
+  // Si el archivo trae demasiados valores, probablemente representa faltantes
+  let pareceFaltantes = totalImportado > (totalEsperado * 0.6);
+
+  if (!pareceFaltantes) {
+    return dataImportada;
   }
-});
+
+  equiposBase.forEach(eq => {
+    let inicio = getInicio(eq);
+    let max = getMax(eq);
+
+    let faltantes = Array.isArray(dataImportada[eq])
+      ? dataImportada[eq].map(Number)
+      : [];
+
+    let conseguidas = [];
+    for (let i = inicio; i <= max; i++) {
+      if (!faltantes.includes(i)) {
+        conseguidas.push(i);
+      }
+    }
+
+    convertido[eq] = conseguidas;
+  });
+
+  return convertido;
+}
 
 // ✅ GUARDAR
-function guardar(){
+
+function guardar() {
+  let tabActiva = obtenerTabActiva();
+
   localStorage.setItem("data", JSON.stringify(data));
   localStorage.setItem("rep", JSON.stringify(repetidas));
+
   render();
+
+  // volver a renderizar secciones dinámicas si están activas
+  if (tabActiva === "intercambio") {
+    renderIntercambio();
+  }
+
+  if (tabActiva === "dashboard") {
+    renderDashboard();
+  }
+
+  // reaplicar filtros después del render
+  reaplicarFiltrosActivos();
+
+  // mantener visible la pestaña activa
+  cambiarTab(tabActiva, false);
 }
+
 
 // ✅ MAX
 
@@ -69,120 +154,123 @@ function getInicio(eq){
 // ✅ RENDER
 
 
-function render(){
 
+
+function render() {
   let cont = document.getElementById("contenedor");
   cont.innerHTML = "";
-  
+
   let falt = 0;
 
-  for(let eq of equiposBase){
-
+  for (let eq of equiposBase) {
     let nombre = eq;
     let codigo = eq.includes("-")
       ? eq.split("-")[1]
-      : eq.substring(0,3).toUpperCase();
+      : eq.substring(0, 3).toUpperCase();
 
     let html = `<div class="card equipo">
-    <h3>${nombre}</h3><div class="grid">`;
+      <h3>${nombre}</h3><div class="grid">`;
 
-    for(let i = getInicio(eq); i <= getMax(eq); i++){
-
+    for (let i = getInicio(eq); i <= getMax(eq); i++) {
       let f = data[eq].includes(i);
 
       html += `
-      <div class="lamina ${f?"faltante":"conseguida"}"
-      onclick="toggle('${eq}',${i})">
-      ${codigo}-${i}
-      </div>`;
+        <div class="lamina ${f ? "conseguida" : "faltante"}"
+             onclick="toggle('${eq}',${i})">
+          ${codigo}-${i}
+        </div>`;
 
-      if(f) falt++;
+      if (!f) falt++;
     }
 
     html += "</div></div>";
     cont.innerHTML += html;
   }
 
-  // ✅ TEXTO DEL FOOTER CORRECTO
   document.getElementById("progreso").innerHTML = `
     <small>App v1.0 · Desarrollado por Mario Márquez © 2026</small>
   `;
 
-  // ✅ FUERA DEL STRING
   renderRepetidas();
 }
 
 
 
-//✅ 1. IMPORTAR ALBUM
-function importarDataArchivo(event){
 
+//✅ 1. IMPORTAR ALBUM
+
+
+function importarDataArchivo(event) {
   let archivo = event.target.files[0];
-  if(!archivo) return;
+  if (!archivo) return;
+
+  if (!archivo.name.toLowerCase().endsWith(".json")) {
+    alert("Selecciona un archivo JSON válido");
+    return;
+  }
 
   let reader = new FileReader();
 
-  reader.onload = function(e){
-
-    try{
+  reader.onload = function(e) {
+    try {
       let dataImportada = JSON.parse(e.target.result);
 
-      // ✅ validar estructura básica
-      if(typeof dataImportada !== "object"){
+      if (!dataImportada || typeof dataImportada !== "object" || Array.isArray(dataImportada)) {
         alert("Archivo inválido");
         return;
       }
 
-      data = dataImportada;
+      // ✅ compatibilidad con archivos viejos
+      data = convertirAlbumSiVieneComoFaltantes(dataImportada);
 
-      guardaNormalizada(); // ✅ importante (ver abajo)
+      guardaNormalizada();
       guardar();
 
       alert("✅ Álbum cargado correctamente");
-
-    }catch(err){
+    } catch (err) {
       alert("Error al leer el archivo");
       console.log(err);
     }
-
   };
 
   reader.readAsText(archivo);
 }
 
-// ✅ TOGGLE Normalizar
-
-function guardaNormalizada(){
-
-  equiposBase.forEach(eq => {
-    if(!data[eq] || !Array.isArray(data[eq])){
-      data[eq] = [];
-    }
-  });
-
-}
 
 
 // ✅ TOGGLE
 function toggle(eq,n){
+  if (!data[eq] || !Array.isArray(data[eq])) {
+    data[eq] = [];
+  }
+
   if(data[eq].includes(n)){
-    data[eq] = data[eq].filter(x=>x!==n);
+    data[eq] = data[eq].filter(x => x !== n);
   }else{
     data[eq].push(n);
   }
+
   guardar();
 }
 
 
+
 // ✅ AGREGAR REPETIDA
+
 function agregarRepetida(){
 
   let eq = document.getElementById("equipoRep").value;
   let num = Number(document.getElementById("numRep").value);
 
-  if(!num) return;
+  if(!eq || !num) return;
 
-  if(!repetidas[eq]) repetidas[eq] = {};
+  if (!data[eq] || !Array.isArray(data[eq])) {
+    data[eq] = [];
+  }
+
+  if(!repetidas[eq] || typeof repetidas[eq] !== "object" || Array.isArray(repetidas[eq])) {
+    repetidas[eq] = {};
+  }
 
   if(!repetidas[eq][num]){
     repetidas[eq][num] = 0;
@@ -190,64 +278,81 @@ function agregarRepetida(){
 
   repetidas[eq][num]++;
 
-  // eliminar de faltantes
-  data[eq] = data[eq].filter(x=>x!==num);
+  // asegurar que también figure como conseguida
+  if(!data[eq].includes(num)){
+    data[eq].push(num);
+  }
 
-  guardar(); // ✅ GUARDA AUTOMÁTICAMENTE
+  guardar();
 }
 
 
 // ✅ USAR REPETIDA
+
+
 function usarRepetida(eq,n){
 
   if(!repetidas[eq] || !repetidas[eq][n]) return;
 
+  if (!data[eq] || !Array.isArray(data[eq])) {
+    data[eq] = [];
+  }
+
   repetidas[eq][n]--;
 
-  if(repetidas[eq][n] === 0){
+  if(repetidas[eq][n] <= 0){
     delete repetidas[eq][n];
   }
 
-  guardar(); // ✅ GUARDA AUTOMÁTICAMENTE
+  if(!data[eq].includes(n)){
+    data[eq].push(n);
+  }
+
+  guardar();
 }
+
+
 
 
 
 // ✅ RENDER REPETIDAS
+
+
 function renderRepetidas(){
 
   let cont = document.getElementById("contenedorRep");
-  cont.innerHTML="";
+  if(!cont) return;
+
+  cont.innerHTML = "";
 
   for(let eq of equiposBase){
 
     let max = getMax(eq);
-    let lista = repetidas[eq] || {};
+    let lista = (repetidas[eq] && typeof repetidas[eq] === "object" && !Array.isArray(repetidas[eq]))
+      ? repetidas[eq]
+      : {};
 
-    
-let nombre = eq;
+    let html = `<div class="card"><h3>${eq}</h3><div class="grid">`;
 
-let html = `<div class="card"><h3>${eq}</h3><div class="grid">`;
-
-
-   for(let i = getInicio(eq); i <= max; i++){
+    for(let i = getInicio(eq); i <= max; i++){
 
       let cant = lista[i] || 0;
 
-      html+=`
-      <div class="lamina ${cant>0?"repetida":""}" 
+      html += `
+      <div class="lamina ${cant > 0 ? "repetida" : ""}" 
            onclick="usarRepetida('${eq}',${i})">
-        ${i} ${cant>0?`(${cant})`:""}
+        ${i} ${cant > 0 ? `(${cant})` : ""}
       </div>`;
     }
 
-    html+="</div></div>";
-
-    cont.innerHTML+=html;
+    html += "</div></div>";
+    cont.innerHTML += html;
   }
 }
 
+
 // ✅ IMPORTAR REPETIDAS
+
 
 function importarRepetidasArchivo(event){
 
@@ -261,12 +366,18 @@ function importarRepetidasArchivo(event){
     try{
       let repetidasImportadas = JSON.parse(e.target.result);
 
-      if(typeof repetidasImportadas !== "object"){
+      if (!repetidasImportadas || typeof repetidasImportadas !== "object" || Array.isArray(repetidasImportadas)) {
         alert("Archivo inválido");
         return;
       }
 
       repetidas = repetidasImportadas;
+
+      equiposBase.forEach(eq => {
+        if (!repetidas[eq] || typeof repetidas[eq] !== "object" || Array.isArray(repetidas[eq])) {
+          repetidas[eq] = {};
+        }
+      });
 
       guardar();
 
@@ -283,64 +394,51 @@ function importarRepetidasArchivo(event){
 }
 
 
+
 // ✅ INTERCAMBIO
 
 
-
-function renderIntercambio(){
-
+function renderIntercambio() {
   let cont = document.getElementById("resultado");
-  if(!cont) return;
+  if (!cont) return;
 
   cont.innerHTML = "";
 
   let sugerencias = [];
 
-  for(let eq of equiposBase){
-
-    let nombre = eq;
-
-    // ✅ obtener código (COL, MEX, etc.)
+  for (let eq of equiposBase) {
     let codigo = eq.includes("-")
       ? eq.split("-")[1]
-      : eq.substring(0,3).toUpperCase();
+      : eq.substring(0, 3).toUpperCase();
 
-    // ✅ calcular faltantes reales
-    let faltantes = [];
-    for(let i = getInicio(eq); i <= getMax(eq); i++){
-      if(!data[eq].includes(i)){
-        faltantes.push(i);
-      }
+    let listaRep = repetidas[eq];
+
+    // validar que exista objeto de repetidas para ese equipo
+    if (!listaRep || typeof listaRep !== "object" || Array.isArray(listaRep)) {
+      continue;
     }
 
-    let total = getMax(eq);
-    let falt = faltantes.length;
+    Object.keys(listaRep).forEach(num => {
+      let cantidad = Number(listaRep[num]) || 0;
 
-    let prioridad = falt / total;
-
-    let reps = repetidas[eq] || {};
-
-    faltantes.forEach(n => {
-
-      let info = reps[n];
-
-      if(info && info > 0){
-
+      if (cantidad > 0) {
         sugerencias.push({
           eq,
-          nombre,
-          codigo, // ✅ agregado
-          lamina: n,
-          cantidad: info,
-          prioridad
+          codigo,
+          lamina: Number(num),
+          cantidad
         });
-
       }
-
     });
   }
 
-  if(sugerencias.length === 0){
+  // ordenar por equipo y número
+  sugerencias.sort((a, b) => {
+    if (a.eq !== b.eq) return a.eq.localeCompare(b.eq);
+    return a.lamina - b.lamina;
+  });
+
+  if (sugerencias.length === 0) {
     cont.innerHTML = `
       <div class="card">
         No hay intercambios sugeridos
@@ -348,108 +446,135 @@ function renderIntercambio(){
     return;
   }
 
-  // ✅ RENDER COMPACTO
-  sugerencias.forEach(s => {
-
-    let textoGuia = "";
-
-    if(guia){
-      let ref = guia.tablas?.find(t => t.tabla === 3);
-      if(ref){
-        textoGuia = ref.rows
-          .map(r => `${r.Tipo} → ${r["Cambio recomendado"]}`)
-          .join("<br>");
-      }
+  let textoGuia = "Cargando guía...";
+  if (guia && Array.isArray(guia.tablas)) {
+    let ref = guia.tablas.find(t => Number(t.tabla) === 3);
+    if (ref && Array.isArray(ref.rows)) {
+      textoGuia = ref.rows
+        .map(r => `${r.Tipo} → ${r["Cambio recomendado"]}`)
+        .join("<br>");
     }
-
-    cont.innerHTML += `
-    <div class="intercambio-item">
-
-      <!-- ✅ FORMATO CORRECTO -->
-      <span class="info-principal">
-        ${s.codigo}-${s.lamina} 🔁 ${s.cantidad}
-      </span>
-
-      <!-- ✅ BOTÓN GUÍA -->
-      <button onclick="toggleGuia(this)">💡</button>
-
-      <!-- ✅ GUÍA OCULTA -->
-      <div class="info-guia oculto">
-        ${textoGuia || "Cargando guía..."}
-      </div>
-
-    </div>`;
-  });
-}
-
-// ✅ HACER INTERCAMBIO
-function hacerIntercambio(eq,n){
-
-  let info = repetidas[eq][n];
-  if(!info || info.intercambio===0) return;
-
-  info.intercambio--;
-
-  if(info.intercambio===0 && info.venta===0){
-    delete repetidas[eq][n];
   }
 
-  data[eq] = data[eq].filter(x=>x!==n);
+  let html = "";
 
-  guardar();
+  sugerencias.forEach(s => {
+    html += `
+      <div class="intercambio-item">
+        <span class="info-principal">
+          ${s.codigo}-${s.lamina} 🔁 ${s.cantidad}
+        </span>
+
+        <button
+          data-lamina="${s.codigo}-${s.lamina}"
+          data-guia="${encodeURIComponent(textoGuia)}"
+          onclick="mostrarGuiaModal(this)">
+          💡
+        </button>
+      </div>`;
+  });
+
+  cont.innerHTML = html;
 }
 
-// ✅ EXPORT
-function descargarJSON(obj,nombre){
+function mostrarGuiaModal(btn) {
+  let seccionIntercambio = document.getElementById("intercambio");
+  if (!seccionIntercambio || seccionIntercambio.classList.contains("oculto")) return;
 
-  const blob = new Blob([JSON.stringify(obj,null,2)], {type:"application/json"});
+  let modal = document.getElementById("modalGuia");
+  let titulo = document.getElementById("modalTitulo");
+  let texto = document.getElementById("modalTexto");
+
+  if (!modal || !titulo || !texto) return;
+
+  let lamina = btn.dataset.lamina || "💡 Intercambio sugerido";
+  let guiaTexto = btn.dataset.guia
+    ? decodeURIComponent(btn.dataset.guia)
+    : "No hay guía disponible";
+
+  titulo.textContent = `💡 ${lamina}`;
+  texto.innerHTML = guiaTexto;
+
+  modal.classList.remove("oculto");
+}
+
+function cerrarModalGuia() {
+  let modal = document.getElementById("modalGuia");
+  if (modal) {
+    modal.classList.add("oculto");
+  }
+}
+
+
+// ✅ EXPORT
+
+function descargarJSON(obj, nombre) {
+  if (!nombre) nombre = "archivo.json";
+
+  const contenido = JSON.stringify(obj ?? {}, null, 2);
+  const blob = new Blob([contenido], { type: "application/json;charset=utf-8" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
   a.href = url;
   a.download = nombre;
+
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
 
-  URL.revokeObjectURL(url);
+  // revocar después para evitar que se corte la descarga
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function exportarData(){
-  descargarJSON(data,"album.json");
+function exportarData() {
+  descargarJSON(data, "album.json");
 }
 
-
-
-
-function exportarRepetidas(){
-
-  // ✅ JSON
+function exportarRepetidas() {
+  // ✅ exportar primero JSON
   descargarJSON(repetidas, "repetidas.json");
 
-  // ✅ preparar datos
+  // ✅ validar librería XLSX
+  if (typeof XLSX === "undefined") {
+    console.log("XLSX no está disponible. Solo se exportó el JSON.");
+    return;
+  }
+
   let filas = [];
   filas.push(["Equipo", "Lamina", "Cantidad"]);
 
-  for(let eq of equiposBase){
+  for (let eq of equiposBase) {
+    let lista = repetidas[eq];
 
-    let lista = repetidas[eq] || {};
+    if (!lista || typeof lista !== "object" || Array.isArray(lista)) {
+      continue;
+    }
 
     Object.keys(lista).forEach(num => {
+      let valor = lista[num];
+      let cantidad = 0;
 
-      let cantidad = lista[num];
-
-      if(cantidad > 0){
-        filas.push([eq, Number(num), cantidad]);
+      // ✅ compatible con esquema actual (número)
+      if (typeof valor === "number") {
+        cantidad = valor;
+      }
+      // ✅ compatible con esquema futuro (objeto)
+      else if (valor && typeof valor === "object" && !Array.isArray(valor)) {
+        cantidad = Number(valor.cantidad) || 0;
       }
 
+      if (cantidad > 0) {
+        filas.push([eq, Number(num), cantidad]);
+      }
     });
   }
 
-  // ✅ crear hoja
+  // ✅ crear hoja Excel
   let ws = XLSX.utils.aoa_to_sheet(filas);
   let wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Repetidas");
 
-  // ✅ 💥 FIX PARA CELULAR
   let wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
 
   let blob = new Blob([wbout], {
@@ -461,11 +586,12 @@ function exportarRepetidas(){
   let a = document.createElement("a");
   a.href = url;
   a.download = "repetidas.xlsx";
+
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
 
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 
@@ -475,10 +601,9 @@ function exportarRepetidas(){
 
  
 function renderDashboard(){
-  
-let cont = document.getElementById("dashboardData");
-if(!cont) return;
 
+  let cont = document.getElementById("dashboardData");
+  if(!cont) return;
 
   cont.innerHTML = "";
 
@@ -490,15 +615,14 @@ if(!cont) return;
   for(let eq of equiposBase){
 
     let nombre = eq.split("-")[0];
-    let total = getMax(eq);
-    let falt = data[eq].length;
+    let total = getMax(eq) - getInicio(eq) + 1;
+    let conseguidas = data[eq].length;
+    let falt = total - conseguidas;
 
     totalGeneral += total;
     faltantesGeneral += falt;
 
-    let conseguidas = total - falt;
-
-    let progreso = ((total - falt)/total*100).toFixed(1);
+    let progreso = ((conseguidas / total) * 100).toFixed(1);
 
     if(["Panini","History","CC"].includes(nombre)){
       cont.innerHTML += `<div>${nombre}: ${progreso}%</div>`;
@@ -513,24 +637,20 @@ if(!cont) return;
     }
   }
 
-  if(grupo.length>0){
+  if(grupo.length > 0){
     cont.innerHTML += `<div>${grupo.join(" | ")}</div>`;
   }
 
-  
-let conseguidasGeneral = totalGeneral - faltantesGeneral;
-let progresoTotal = ((conseguidasGeneral) / totalGeneral * 100).toFixed(1);
+  let conseguidasGeneral = totalGeneral - faltantesGeneral;
+  let progresoTotal = ((conseguidasGeneral / totalGeneral) * 100).toFixed(1);
 
-
-  
-cont.innerHTML = `
-  <div class="dashboard-total">
-    🌎 Progreso total del álbum: ${progresoTotal}% 
-    <br>
-    🌎 Faltan: ${faltantesGeneral}
-  </div>
-` + cont.innerHTML;
-
+  cont.innerHTML = `
+    <div class="dashboard-total">
+      🌎 Progreso total del álbum: ${progresoTotal}% 
+      <br>
+      🌎 Faltan: ${faltantesGeneral}
+    </div>
+  ` + cont.innerHTML;
 }
 
 
@@ -545,72 +665,90 @@ function cargarEquipos(){
   });
 }
 
-function cambiarTab(tab){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.add("oculto"));
+
+
+function cambiarTab(tab, renderizar = true) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.add("oculto"));
   document.getElementById(tab).classList.remove("oculto");
 
-  if(tab==="intercambio") renderIntercambio();
-  if(tab==="dashboard") renderDashboard();
+  cerrarModalGuia();
+
+  if (renderizar) {
+    if (tab === "intercambio") renderIntercambio();
+    if (tab === "dashboard") renderDashboard();
+  }
+
+  // reaplicar filtro de la pestaña actual
+  if (tab === "album") filtrarEquipos();
+  if (tab === "repetidas") filtrarRepetidas();
+  if (tab === "intercambio") filtrarIntercambio();
 }
 
-// ✅ BUSCADOR (AGREGAR AQUÍ)// ✅ BUSCADOR 
-function filtrarEquipos(){
+function obtenerTabActiva() {
+  let activa = document.querySelector(".tab:not(.oculto)");
+  return activa ? activa.id : "album";
+}
+ 
 
-  let txt = document.getElementById("buscar").value.toLowerCase();
 
-  document.querySelectorAll(".equipo").forEach(card => {
 
-    let nombre = card.querySelector("h3").textContent.toLowerCase();
+// ✅ BUSCADOR GENÉRICO MEJORADO
+function filtrarLista(inputId, selectorItems, modoTexto = "titulo", displayVisible = "block") {
+  let input = document.getElementById(inputId);
+  if (!input) return;
 
-    if(nombre.includes(txt)){
-      card.style.display = "block";
+  let txt = input.value.toLowerCase().trim();
+
+  document.querySelectorAll(selectorItems).forEach(card => {
+    let textoBase = "";
+
+    if (modoTexto === "titulo") {
+      let titulo = card.querySelector("h3");
+      textoBase = titulo ? titulo.textContent.toLowerCase() : "";
+    } 
+    else if (modoTexto === "principal") {
+      let principal = card.querySelector(".info-principal");
+      textoBase = principal ? principal.textContent.toLowerCase() : "";
+    } 
+    else {
+      textoBase = card.textContent.toLowerCase();
+    }
+
+    if (textoBase.includes(txt)) {
+      card.style.display = displayVisible;
     } else {
       card.style.display = "none";
     }
-
   });
 }
 
-function filtrarRepetidas(){
-
-  let txt = document.getElementById("buscarRep").value.toLowerCase();
-
-  document.querySelectorAll("#contenedorRep .card").forEach(card => {
-
-    let nombre = card.querySelector("h3").textContent.toLowerCase();
-
-    if(nombre.includes(txt)){
-      card.style.display = "block";
-    } else {
-      card.style.display = "none";
-    }
-
-  });
+// ✅ BUSCAR EN ÁLBUM
+function filtrarEquipos() {
+  filtrarLista("buscar", ".equipo", "titulo", "block");
 }
 
-
-function filtrarIntercambio(){
-
-  let txt = document.getElementById("buscarInter").value.toLowerCase();
-
-  document.querySelectorAll("#resultado .intercambio-item").forEach(card => {
-
-    let texto = card.textContent.toLowerCase();
-
-    if(texto.includes(txt)){
-      card.style.display = "flex";
-    } else {
-      card.style.display = "none";
-    }
-
-  });
+// ✅ BUSCAR EN REPETIDAS
+function filtrarRepetidas() {
+  filtrarLista("buscarRep", "#contenedorRep .card", "titulo", "block");
 }
 
+// ✅ BUSCAR EN INTERCAMBIO SUGERIDO
+function filtrarIntercambio() {
+  filtrarLista("buscarInter", "#resultado .intercambio-item", "principal", "flex");
+}
+
+function reaplicarFiltrosActivos() {
+  filtrarEquipos();
+  filtrarRepetidas();
+  filtrarIntercambio();
+}
 
 function init(){
   cargarEquipos();
   render();
 }
+
+init();
 
 init();
 
